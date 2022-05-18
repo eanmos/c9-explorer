@@ -1,0 +1,97 @@
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<style>
+			.tree-node {
+				padding-left: 30px;
+			}
+
+			.arrow::after {
+				content: "\25be";
+			}
+
+			.arrow.visible::after {
+				content: "\25b8";
+			}
+
+			.arrow, .label {
+				display: inline;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="tree-node">
+			<div class="self">
+				<div class="arrow"></div>
+				<div class="label">Translation Unit</div>
+			</div>
+			<div class="children">
+				<div class="tree-node">
+					<div class="self">
+						<div class="label">Variable Declaration</div>
+					</div>
+				</div>
+
+				<div class="tree-node">
+					<div class="self">
+						<div class="label">Variable Declaration</div>
+					</div>
+				</div>
+
+				<div class="tree-node">
+					<div class="self">
+						<div class="arrow"></div>
+						<div class="label">Function Definition</div>
+					</div>
+					<div class="children">
+						<div class="tree-node">
+							<div class="self">
+								<div class="label">Parameter Declaration</div>
+							</div>
+						</div>
+
+						<div class="tree-node">
+							<div class="self">
+								<div class="label">Parameter Declaration</div>
+							</div>
+						</div>
+
+						<div class="tree-node">
+							<div class="self">
+								<div class="label">Compound Statement</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			let elements = document.querySelectorAll(".tree-node .self .label");
+			let elementsArray = Array.prototype.slice.call(elements);
+
+			elementsArray.forEach(function(elem) {
+			  elem.addEventListener("click", function(){
+					let selfNode = this.parentNode;
+					let treeNode = selfNode.parentNode;
+					let childrenNode = treeNode.querySelector(".children");
+
+					if (childrenNode) {
+						toggleElementVisibility(childrenNode);
+
+						let arrowNode = selfNode.querySelector(".arrow");
+
+						if (arrowNode)
+							arrowNode.classList.toggle("visible");
+					}
+			  });
+			});
+
+			function toggleElementVisibility(node) {
+				node.style.display =
+					node.style.display === "none" ? "block" : "none";
+			}
+		</script>
+	</body>
+</html>

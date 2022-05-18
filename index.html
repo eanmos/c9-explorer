@@ -1,0 +1,32 @@
+<html>
+<body>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script src="springy.js"></script>
+<script src="springyui.js"></script>
+<script>
+var graph = new Springy.Graph();
+
+var transunit = graph.newNode({label: 'Translation Unit'});
+var funcdecl = graph.newNode({label: 'Function Declaration', funcdecl: 'int sum(int, int)'});
+var parmdecl_1 = graph.newNode({label: 'Parameter Declaration'});
+var parmdecl_2 = graph.newNode({label: 'Parameter Declaration'});
+var compstmt = graph.newNode({label: 'Compound Statement'});
+
+graph.newEdge(transunit, funcdecl, {color: '#00A0B0'});
+graph.newEdge(funcdecl, parmdecl_1, {color: '#6A4A3C'});
+graph.newEdge(funcdecl, parmdecl_2, {color: '#CC333F'});
+graph.newEdge(funcdecl, compstmt, {color: '#EB6841'});
+
+jQuery(function(){
+  var springy = window.springy = jQuery('#springydemo').springy({
+    graph: graph,
+    nodeSelected: function(node){
+      console.log('Node selected: ' + JSON.stringify(node.data));
+    }
+  });
+});
+</script>
+
+<canvas id="springydemo" width="1920" height="1080" />
+</body>
+</html>
