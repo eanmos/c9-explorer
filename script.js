@@ -14,6 +14,7 @@ foo(int a, int b)
 });
 
 var doc = myCodeMirror.getDoc();
+var text_mark = null;
 // doc.markText({line: 0, ch: 0}, {line: 0, ch: 5}, {className: "editor-highlight", inclusiveLeft: true, inclusiveRight: true, selectRight: true, selectLeft: true, startStyle: "editor-highlight", endStyle: "editor-highlight"})
 
 var cur_src_start_row = -1;
@@ -29,6 +30,12 @@ function src_highligh_range(start, end)
   }
 }
 
+function src_highligh_text_range(line, start, end)
+{
+    if (text_mark) text_mark.clear();
+    text_mark = doc.markText({line: line, ch: start}, {line: line, ch: end}, {className: "editor-highlight", inclusiveLeft: true, inclusiveRight: true, selectRight: true, selectLeft: true, startStyle: "editor-highlight", endStyle: "editor-highlight"})
+}
+
 function initHighlightingCST() {
   let elements = document.querySelectorAll(".tree-node .self .label");
   let elementsArray = Array.prototype.slice.call(elements);
@@ -40,7 +47,15 @@ function initHighlightingCST() {
 
       const start_row = parseInt(treeNode.querySelector('.start-row-info').innerHTML)
       const end_row = parseInt(treeNode.querySelector('.end-row-info').innerHTML)
+      const start_col = parseInt(treeNode.querySelector('.start-col-info').innerHTML)
+      const end_col = parseInt(treeNode.querySelector('.end-col-info').innerHTML)
 
+      ClearHighlightCST();
+      HighlightNodeCST(treeNode);
+
+      if (start_row == end_row) {
+        src_highligh_text_range(start_row, start_col, end_col);
+      }
       src_highligh_range(start_row, end_row);
     });
   });
@@ -105,6 +120,8 @@ function renderCSTNode(node, par) {
 
   const start_row = node.start.row;
   const end_row = node.end.row;
+  const start_col = node.start.col;
+  const end_col = node.end.col;
 
   var start_row_div = document.createElement('div');
   start_row_div.classList.toggle("start-row-info");
@@ -114,8 +131,18 @@ function renderCSTNode(node, par) {
   end_row_div.classList.toggle("end-row-info");
   end_row_div.innerHTML = end_row
 
+  var start_col_div = document.createElement('div');
+  start_col_div.classList.toggle("start-col-info");
+  start_col_div.innerHTML = start_col
+
+  var end_col_div = document.createElement('div');
+  end_col_div.classList.toggle("end-col-info");
+  end_col_div.innerHTML = end_col
+
   node_div.appendChild(start_row_div);
   node_div.appendChild(end_row_div);
+  node_div.appendChild(start_col_div);
+  node_div.appendChild(end_col_div);
 
   label_div.classList.toggle("label");
   label_div.innerHTML = node.name;
@@ -148,6 +175,41 @@ function renderCSTNode(node, par) {
     par.appendChild(node_div);
 
   return node_div;
+}
+
+function wrap(el, wrapper) {
+    el.parentNode.insertBefore(wrapper, el);
+    wrapper.appendChild(el);
+}
+
+function unwrap(el) {
+el.replaceWith(...el.childNodes)
+}
+
+function HighlightNodeCST(div)
+{
+  var highlight = document.createElement('div');
+  highlight.classList.toggle("cst_high");
+
+var cst_container = document.getElementById("cst-container")
+  var cst_con_x = cst_container.getBoundingClientRect().x
+  var div_x = div.getBoundingClientRect().x
+  var dx = Math.abs(cst_con_x - div_x)
+
+  highlight.style.marginLeft = `${-dx}px`;
+  highlight.style.paddingLeft = `${dx}px`;
+  wrap(div, highlight);
+}
+
+function ClearHighlightCST()
+{
+  let elements = document.querySelectorAll(".cst_high");
+  let elementsArray = Array.prototype.slice.call(elements);
+
+  elementsArray.forEach(function(elem) {
+    unwrap(elem);
+  });
+
 }
 
 renderCST();
