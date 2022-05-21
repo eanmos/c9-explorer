@@ -1,14 +1,33 @@
+<!Doctype html>
 <html>
 	<head>
 		<meta charset="utf-8" />
 		<title></title>
 		<style>
 			.tree-node {
-				padding-left: 30px;
+				padding-left: 10px;
+			}
+
+			.label {
+				font: 12px "monospace";
+			}
+
+			.label:hover {
+				cursor: pointer;
+			}
+			
+			.arrow {
+				margin-right: 5px;
+				font-size: 75%;
+			}
+
+			.arrow:hover {
+				cursor: pointer;
 			}
 
 			.arrow::after {
 				content: "\25be";
+				color: #666;
 			}
 
 			.arrow.visible::after {
@@ -18,80 +37,90 @@
 			.arrow, .label {
 				display: inline;
 			}
+
+			#code-editor {
+				width: 200px;
+				height: 100%;
+				box-sizing: border-box;
+			}
+
+			.CodeMirror {
+				height: 100% !important;
+			}
+
+			html {
+				width: 100%;
+				height: 100%;
+				padding: 0;
+				margin: 0;
+			}
+
+			body {
+				display: flex;
+				width: 100%;
+				height: 100%;
+				padding: 0;
+				margin: 0;
+			}
+			#main {
+			height: 100%;
+			width: 100%;
+				padding: 0;
+				margin: 0;
+
+			}
 		</style>
+<style>
+#cst-container {
+	width: 400px;
+	overflow: scroll !important;
+}
+			.start-row-info, .end-row-info {
+				display: none;
+			}
+			.editor-highlight {
+				background: rgba(200, 200, 70, 0.5);
+			}
+</style>
+
+<link rel="stylesheet" type="text/css" href="resizable-style.css">
+		<script src="resizable.js"></script>
+
+<script src="lib/codemirror.js"></script>
+<script src="keymap/vim.js"></script>
+<link rel="stylesheet" href="lib/codemirror.css">
+<script src="mode/clike/clike.js"></script>
+<script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+		<script defer src="script.js"></script>
 	</head>
 	<body>
-		<div class="tree-node">
-			<div class="self">
-				<div class="arrow"></div>
-				<div class="label">Translation Unit</div>
-			</div>
-			<div class="children">
-				<div class="tree-node">
-					<div class="self">
-						<div class="label">Variable Declaration</div>
-					</div>
-				</div>
-
-				<div class="tree-node">
-					<div class="self">
-						<div class="label">Variable Declaration</div>
-					</div>
-				</div>
-
-				<div class="tree-node">
-					<div class="self">
-						<div class="arrow"></div>
-						<div class="label">Function Definition</div>
-					</div>
-					<div class="children">
-						<div class="tree-node">
-							<div class="self">
-								<div class="label">Parameter Declaration</div>
-							</div>
-						</div>
-
-						<div class="tree-node">
-							<div class="self">
-								<div class="label">Parameter Declaration</div>
-							</div>
-						</div>
-
-						<div class="tree-node">
-							<div class="self">
-								<div class="label">Compound Statement</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+		<div id="main">
+			<div id="code-editor" class="resizable-left"></div>
+			<div id="cst-container" class="resizable-right"></div>
 		</div>
-
-		<script>
-			let elements = document.querySelectorAll(".tree-node .self .label");
-			let elementsArray = Array.prototype.slice.call(elements);
-
-			elementsArray.forEach(function(elem) {
-			  elem.addEventListener("click", function(){
-					let selfNode = this.parentNode;
-					let treeNode = selfNode.parentNode;
-					let childrenNode = treeNode.querySelector(".children");
-
-					if (childrenNode) {
-						toggleElementVisibility(childrenNode);
-
-						let arrowNode = selfNode.querySelector(".arrow");
-
-						if (arrowNode)
-							arrowNode.classList.toggle("visible");
-					}
-			  });
-			});
-
-			function toggleElementVisibility(node) {
-				node.style.display =
-					node.style.display === "none" ? "block" : "none";
-			}
-		</script>
 	</body>
+
+	<script>
+
+		document.addEventListener("DOMContentLoaded", () => {
+			document.getElementById("main").style.width = window.innerWidth + "px";
+			document.getElementById("main").style.height = window.innerHeight + "px";
+			var sizes = {
+				"code-editor" : 0.5,
+				"cst-container" : 0.75
+			};
+
+			//let resizerThickness = 10;
+			//Resizable.initialise("main", sizes, resizerThickness);
+			Resizable.initialise("main", {});
+
+		});
+
+		window.addEventListener("resize", () => {
+			Resizable.activeContentWindows[0].changeSize(window.innerWidth, window.innerHeight);
+			Resizable.activeContentWindows[0].childrenResize();
+		});
+		
+		
+	</script>
 </html>
