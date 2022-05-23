@@ -1,0 +1,114 @@
+.tree-node {
+  padding-left: 10px;
+  width: 100%;
+}
+
+.self {
+  width: 100%;
+  display: flex;
+}
+
+.label {
+  font: 12px "monospace";
+  width: 100%;
+  user-select: none;
+}
+
+.label:hover {
+  cursor: pointer;
+}
+
+.arrow {
+  margin-right: 5px;
+  font-size: 75%;
+}
+
+.arrow:hover {
+  cursor: pointer;
+}
+
+.arrow::after {
+  content: "\25be";
+  color: #666;
+}
+
+.arrow.visible::after {
+  content: "\25b8";
+}
+
+.arrow,
+.label {
+  display: inline;
+}
+
+#code-editor {
+  width: 200px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.CodeMirror {
+  height: 100% !important;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+#main {
+  height: 400px;
+  width: 400px;
+  padding: 0;
+  margin: 0;
+
+  overflow: hidden;
+}
+
+#cst-container {
+  width: 400px;
+  overflow-y: scroll !important;
+  overflow-x: hidden;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  box-sizing: content-box;
+}
+
+#cst-container:hover {
+  cursor: pointer;
+}
+.start-row-info,
+.end-row-info,
+.start-col-info,
+.end-col-info {
+  display: none;
+}
+.editor-highlight {
+  background: rgba(200, 200, 70, 0.5);
+}
+
+.cst_high {
+  background: rgba(200, 200, 70, 0.4);
+  width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.cst_high:hover {
+  cursor: pointer;
+}
+
+.children.hidden {
+	display: none;
+}

@@ -1,32 +1,48 @@
-<html>
-<body>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
-<script src="springy.js"></script>
-<script src="springyui.js"></script>
-<script>
-var graph = new Springy.Graph();
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>C9 Compiler</title>
 
-var transunit = graph.newNode({label: 'Translation Unit'});
-var funcdecl = graph.newNode({label: 'Function Declaration', funcdecl: 'int sum(int, int)'});
-var parmdecl_1 = graph.newNode({label: 'Parameter Declaration'});
-var parmdecl_2 = graph.newNode({label: 'Parameter Declaration'});
-var compstmt = graph.newNode({label: 'Compound Statement'});
+    <!-- Resizable -->
+    <script defer src="lib/resizable/resizable.js"></script>
+    <link rel="stylesheet" type="text/css" href="lib/resizable/resizable-style.css" />
 
-graph.newEdge(transunit, funcdecl, {color: '#00A0B0'});
-graph.newEdge(funcdecl, parmdecl_1, {color: '#6A4A3C'});
-graph.newEdge(funcdecl, parmdecl_2, {color: '#CC333F'});
-graph.newEdge(funcdecl, compstmt, {color: '#EB6841'});
+    <!-- Codemirror -->
+    <script defer src="lib/codemirror/codemirror.js"></script>
+    <script defer src="lib/codemirror/keymap/vim.js"></script>
+    <script defer src="lib/codemirror/mode/clike/clike.js"></script>
+    <link rel="stylesheet" href="lib/codemirror/codemirror.css" />
 
-jQuery(function(){
-  var springy = window.springy = jQuery('#springydemo').springy({
-    graph: graph,
-    nodeSelected: function(node){
-      console.log('Node selected: ' + JSON.stringify(node.data));
-    }
-  });
-});
-</script>
+    <script defer src="script.js"></script>
+    <link rel="stylesheet" type="text/css" href="stylesheets.css" />
+  </head>
+  <body>
+    <div id="main">
+      <div id="code-editor" class="resizable-left"></div>
+      <div id="cst-container" class="resizable-right"></div>
+    </div>
+  </body>
 
-<canvas id="springydemo" width="1920" height="1080" />
-</body>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("main").style.width = window.innerWidth + "px";
+      document.getElementById("main").style.height = window.innerHeight + "px";
+      var sizes = {
+        "code-editor": 0.5,
+        "cst-container": 0.75,
+      };
+
+      let resizerThickness = 5;
+      Resizable.initialise("main", sizes, resizerThickness);
+    });
+
+    window.addEventListener("resize", () => {
+      Resizable.activeContentWindows[0].changeSize(
+        window.innerWidth,
+        window.innerHeight
+      );
+      Resizable.activeContentWindows[0].childrenResize();
+    });
+  </script>
 </html>
