@@ -32,11 +32,25 @@ class Compiler {
   constructor() {
     this.lexerOutput = null;
     this.parserOutput = null;
-    this.url = "http://localhost:9000";
+    this.parserURL = "http://localhost:9000/parse";
+    this.lexerURL = "http://localhost:9000/tokenize";
+  }
+
+  tokenize(sourceCode) {
+    return fetch(this.lexerURL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "plain/text;charset=utf-8",
+      },
+      body: sourceCode,
+    })
+      .then(response => response.text())
+      .then(text => (this.lexerOutput = text))
+      .catch(e => { /* ignore */ });
   }
 
   parse(sourceCode) {
-    return fetch(this.url, {
+    return fetch(this.parserURL, {
       method: "POST",
       headers: {
         "Content-Type": "plain/text;charset=utf-8",
@@ -46,7 +60,7 @@ class Compiler {
       .then(response => response.text())
       .then(text => (this.parserOutput = text))
       .catch(e => { /* ignore */ });
-  };
+  }
 }
 
 /*
@@ -90,6 +104,10 @@ class ViewCST {
 
   setEditorHighlightTextCallback(f) {
     this.editorHighlightText = f;
+  }
+
+  setViewTokensHighlightRange(f) {
+    this.viewTokensHighlightRange = f;
   }
 
   build(cst, parentContainer) {
@@ -190,12 +208,56 @@ class ViewCST {
         self.clearHighlight();
         self.highlightNode(treeNode);
 
+        self.viewTokensHighlightRange(startRow, startCol, endRow, endCol);
         self.editorHighlightLines(startRow, endRow);
 
         if (startRow == endRow)
           self.editorHighlightText(startRow, startCol, startRow, endCol);
       });
     });
+  }
+
+  highlightRange(startRow, startCol, endRow, endCol) {
+    this.clearHighlight();
+
+    const inside = (sr, sc, er, rc) => {
+      return sr >= startRow && sc >= startCol && er <= endRow && rc <= endCol;
+    }
+
+    let current = null;
+    let elems = Array.prototype.slice.call($$(".tree-node"));
+
+    elems.forEach(function (elem) {
+      const sr = parseInt(elem.dataset.startRow);
+      const sc = parseInt(elem.dataset.startCol);
+      const er = parseInt(elem.dataset.endRow);
+      const ec = parseInt(elem.dataset.endCol);
+
+      if (!inside(sr, sc, er, ec))
+        return;
+
+      if (current == null) {
+        current = elem;
+        return;
+      }
+
+      const cur_sr = parseInt(current.dataset.startRow);
+      const cur_sc = parseInt(current.dataset.startCol);
+      const cur_er = parseInt(current.dataset.endRow);
+      const cur_ec = parseInt(current.dataset.endCol);
+
+      const     dr =     sr -     er;
+      const     dc =     sc -     ec;
+      const cur_dr = cur_sr - cur_er;
+      const cur_dc = cur_sc - cur_ec;
+
+      if (dr <= cur_dr)
+        current = elem;
+      else if (dr === cur_dr && dc <= cur_dc)
+        current = elem;
+    });
+
+    this.highlightNode(current);
   }
 }
 
@@ -223,6 +285,9 @@ foo(int a, int b)
     this.codemirror.on("change", () => {
       compiler.parse(this.editorDoc.getValue())
         .then(_ => viewCST.render());
+
+      compiler.tokenize(this.editorDoc.getValue())
+        .then(_ => viewTokens.render());
     });
   }
 
@@ -254,15 +319,158 @@ foo(int a, int b)
   }
 }
 
+class ViewTokens {
+  constructor(c) {
+    this.container = c;
+  }
+
+  render() {
+    let self = this;
+
+    let tokens = null;
+
+    try {
+      tokens = JSON.parse(compiler.lexerOutput).tokens;
+    } catch (e) {
+      /* ignore errors for now */
+    }
+
+    if (!tokens)
+      return;
+
+    clearElem(this.container);
+
+    tokens.forEach((e) => {
+      let container = createElem("div", "token");
+      let label = createElem("div", "label");
+      let lexem = createElem("div", "lexem");
+
+      label.innerHTML = e.type;
+      lexem.innerHTML = e.lexem;
+
+      container.dataset.col = e.col;
+      container.dataset.row = e.row;
+      container.dataset.lexem = e.lexem;
+
+      container.appendChild(label);
+      container.appendChild(lexem);
+
+      container.classList.add(e.metatype);
+
+      this.container.appendChild(container);
+    });
+
+    this.initHighlighting()
+  }
+
+  initHighlighting() {
+    let self = this;
+
+    let elems = Array.prototype.slice.call(
+      $$("#lex-container .token")
+    );
+
+    elems.forEach(function (elem) {
+      elem.addEventListener("mouseover", function () {
+        const row = parseInt(elem.dataset.row);
+        const col = parseInt(elem.dataset.col);
+        const lexem = elem.dataset.lexem;
+
+        self.clearHighlight();
+        self.highlightNode(elem);
+
+        self.editorHighlightLines(row, row);
+        self.editorHighlightText(row, col, row, col + lexem.length);
+        self.CSTViewHighlightRange(row, col, row, col + lexem.length);
+      });
+    });
+  }
+
+  highlightRange(startRow, startCol, endRow, endCol) {
+    let self = this;
+
+    self.clearHighlight();
+
+    const inside = (sr, sc, er, rc) => {
+      if (startRow == endRow)
+        return sr >= startRow && sc >= startCol && er <= endRow && rc <= endCol;
+
+      if (sr >= startRow && er <= endRow)
+        return true;
+
+      return sr >= startRow && sc >= startCol && er <= endRow && rc <= endCol;
+    }
+
+    let elems = Array.prototype.slice.call(
+      $$("#lex-container .token")
+    );
+
+    let insideElements = [];
+
+    elems.forEach(function (elem) {
+      const row = parseInt(elem.dataset.row);
+      const col = parseInt(elem.dataset.col);
+      const endCol = col + elem.dataset.lexem.length;
+
+      if (inside(row, col, row, endCol))
+        insideElements.push(elem);
+    });
+
+    insideElements.forEach(function (elem) {
+      self.highlightNode(elem);
+    });
+  }
+
+  highlightNode(node) {
+    let highlight = createElem("div", "lex_high");
+
+    const container_x = this.container.getBoundingClientRect().x;
+    const node_x = node.getBoundingClientRect().x;
+    const dx = Math.abs(container_x - node_x);
+
+    highlight.style.marginLeft = `${-dx}px`;
+    highlight.style.paddingLeft = `${dx}px`;
+
+    wrap(node, highlight);
+  }
+
+  clearHighlight() {
+    let a = Array.prototype.slice.call($$(".lex_high"));
+    a.forEach(unwrap);
+  }
+
+  setEditorHighlightLinesCallback(f) {
+    this.editorHighlightLines = f;
+  }
+
+  setEditorHighlightTextCallback(f) {
+    this.editorHighlightText = f;
+  }
+
+  setCSTViewHighlightRange(f) {
+    this.CSTViewHighlightRange = f;
+  }
+}
+
 let viewCST = new ViewCST($("#cst-container"));
 let compiler = new Compiler();
 let codeEditor = new CodeEditor($("#code-editor"));
+let viewTokens = new ViewTokens($("#lex-container"));
 
 document.body.onload = () => {
-  codeEditor.initOnChange(compiler, viewCST);
+  codeEditor.initOnChange(compiler, viewCST, viewTokens);
+
+  viewCST.setViewTokensHighlightRange(viewTokens.highlightRange.bind(viewTokens));
   viewCST.setEditorHighlightLinesCallback(codeEditor.highlightLineRange.bind(codeEditor));
   viewCST.setEditorHighlightTextCallback(codeEditor.highlightRange.bind(codeEditor));
 
+  viewTokens.setEditorHighlightLinesCallback(codeEditor.highlightLineRange.bind(codeEditor));
+  viewTokens.setEditorHighlightTextCallback(codeEditor.highlightRange.bind(codeEditor));
+  viewTokens.setCSTViewHighlightRange(viewCST.highlightRange.bind(viewCST));
+
   compiler.parse(codeEditor.getValue())
     .then(_ => viewCST.render());
+
+  compiler.tokenize(codeEditor.getValue())
+    .then(_ => viewTokens.render());
 }

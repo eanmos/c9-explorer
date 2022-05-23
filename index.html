@@ -18,10 +18,13 @@
     <link rel="stylesheet" type="text/css" href="stylesheets.css" />
   </head>
   <body>
-    <div id="main">
-      <div id="code-editor" class="resizable-left"></div>
-      <div id="cst-container" class="resizable-right"></div>
-    </div>
+	<div id="main">
+		<div id="code-editor" class="resizable-left"></div>
+		<div id="code-editor-right-split" class="resizable-right">
+			<div id="lex-container" class="resizable-left"></div>
+			<div id="cst-container" class="resizable-right"></div>
+		</div>
+	</div>
   </body>
 
   <script>
@@ -30,7 +33,8 @@
       document.getElementById("main").style.height = window.innerHeight + "px";
       var sizes = {
         "code-editor": 0.5,
-        "cst-container": 0.75,
+		"lex-container": 0.5,
+        "cst-container": 0.5,
       };
 
       let resizerThickness = 5;

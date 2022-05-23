@@ -98,17 +98,69 @@ body {
   background: rgba(200, 200, 70, 0.5);
 }
 
-.cst_high {
+.cst_high,
+.lex_high {
   background: rgba(200, 200, 70, 0.4);
   width: 100%;
   overflow-x: hidden;
   box-sizing: border-box;
 }
 
-.cst_high:hover {
+.cst_high:hover,
+.lex_high:hover {
   cursor: pointer;
 }
 
 .children.hidden {
 	display: none;
+}
+
+.token {
+  font: 12px "monospace";
+}
+
+#lex-container {
+	padding-left: 8px;
+	padding-top: 4px;
+	width: 100%;
+	height: 100%;
+}
+
+#lex-container .label,
+#lex-container .lexem {
+	display: inline;
+}
+
+#lex-container .label {
+	margin-right: 8px;
+}
+
+#cont {
+	width: 800px;
+	height: 600px;
+}
+
+.lexem {
+	font-style: italic;
+	color: green;
+}
+
+.lexem::before {
+	content: "'";
+}
+
+.lexem::after {
+	content: "'";
+}
+
+.keyword .label {
+	color: #708;
+}
+
+.type .label {
+	color: #170;
+}
+
+.identifier .label {
+	color: #05a;
 }
