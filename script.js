@@ -306,7 +306,7 @@ foo(int a, int b)
     this.highlightErrorLineRange(row, row);
   }
 
-  fixDoubleBordersOnAdjacentLines() {
+  addBordersToHighlight() {
     for (let i = 0; i < this.editorDoc.lineCount(); i++) {
       if (!this.lineIsHighlighted(i))
         continue;
@@ -353,7 +353,7 @@ foo(int a, int b)
     for (let i = start; i <= end; i++)
       this.editorDoc.addLineClass(i, "wrap", "editor-highlight");
 
-    this.fixDoubleBordersOnAdjacentLines()
+    this.addBordersToHighlight()
   }
 
   highlightRange(startRow, startCol, endRow, endCol) {
