@@ -290,6 +290,7 @@ foo(int a, int b)
     this.editorDoc = this.codemirror.getDoc();
     this.currentHighlight = null;
     this.currentErrorHighlight = null;
+    this.errorWidget = null;
   }
 
   highlightError(row, col) {
@@ -304,6 +305,12 @@ foo(int a, int b)
 
     this.clearErrorHighlight();
     this.highlightErrorLineRange(row, row);
+
+    let errmsg = createElem("div", "error-message");
+    let pad = "";
+    for (let i = 0; i <= col; i++) pad += "&nbsp;";
+    errmsg.innerHTML = pad + "⌃ <span class=\"error-message-title\">Lexical Error</span>: unrecognized token."
+    this.errorWidget = this.editorDoc.addLineWidget(row, errmsg, {className: "error-message"});
   }
 
   addBordersToHighlight() {
@@ -373,6 +380,9 @@ foo(int a, int b)
       this.editorDoc.removeLineClass(i, "wrap", "editor-highlight-error-first");
       this.editorDoc.removeLineClass(i, "wrap", "editor-highlight-error-last");
     }
+
+    if (this.errorWidget)
+      this.errorWidget.clear();
   }
 
   clearHighlight() {
