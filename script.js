@@ -289,6 +289,41 @@ foo(int a, int b)
 
     this.editorDoc = this.codemirror.getDoc();
     this.currentHighlight = null;
+    this.currentErrorHighlight = null;
+  }
+
+  highlightError(row, col) {
+    if (this.currentErrorHighlight)
+      this.currentErrorHighlight.clear();
+
+    this.currentErrorHighlight = this.editorDoc.markText(
+      { line: row, ch: col },
+      { line: row, ch: col + 1},
+      { className: "editor-highlight-error" }
+    );
+
+    this.clearErrorHighlight();
+    this.highlightErrorLineRange(row, row);
+  }
+
+  fixDoubleBordersOnAdjacentLines() {
+    for (let i = 0; i < this.editorDoc.lineCount(); i++) {
+      if (!this.lineIsHighlighted(i))
+        continue;
+
+      if (!this.lineIsHighlighted(i - 1))
+        this.editorDoc.addLineClass(i, "wrap", "editor-highlight-first");
+
+      if (!this.lineIsHighlighted(i + 1))
+        this.editorDoc.addLineClass(i, "wrap", "editor-highlight-last");
+    }
+  }
+
+  lineIsHighlighted(n) {
+    const info = this.editorDoc.lineInfo(n);
+    if (!info || !info.wrapClass) return false;
+    console.log(info.wrapClass)
+    return info.wrapClass.includes("editor-highlight");
   }
 
   initOnChange(compiler, viewCST) {
@@ -305,11 +340,20 @@ foo(int a, int b)
     return this.editorDoc.getValue();
   }
 
+  highlightErrorLineRange(start, end) {
+    this.clearErrorHighlight();
+
+    for (let i = start; i <= end; i++)
+      this.editorDoc.addLineClass(i, "wrap", "editor-highlight-error");
+  }
+
   highlightLineRange(start, end) {
     this.clearHighlight();
 
     for (let i = start; i <= end; i++)
       this.editorDoc.addLineClass(i, "wrap", "editor-highlight");
+
+    this.fixDoubleBordersOnAdjacentLines()
   }
 
   highlightRange(startRow, startCol, endRow, endCol) {
@@ -323,26 +367,49 @@ foo(int a, int b)
     );
   }
 
+  clearErrorHighlight() {
+    for (let i = 0; i <= this.editorDoc.lineCount(); i++) {
+      this.editorDoc.removeLineClass(i, "wrap", "editor-highlight-error");
+      this.editorDoc.removeLineClass(i, "wrap", "editor-highlight-error-first");
+      this.editorDoc.removeLineClass(i, "wrap", "editor-highlight-error-last");
+    }
+  }
+
   clearHighlight() {
-    for (let i = 0; i <= 10000; i++)
+    for (let i = 0; i <= this.editorDoc.lineCount(); i++) {
       this.editorDoc.removeLineClass(i, "wrap", "editor-highlight");
+      this.editorDoc.removeLineClass(i, "wrap", "editor-highlight-first");
+      this.editorDoc.removeLineClass(i, "wrap", "editor-highlight-last");
+    }
   }
 }
 
 class ViewTokens {
   constructor(c) {
     this.container = c;
+    this.highlightCodeError = null;
   }
 
   render() {
     let self = this;
 
+    let result = null;
     let tokens = null;
 
     try {
-      tokens = JSON.parse(compiler.lexerOutput).tokens;
+      result = JSON.parse(compiler.lexerOutput);
     } catch (e) {
       /* ignore errors for now */
+    }
+
+    if (result.tokens) {
+      tokens = result.tokens;
+      self.clearCodeErrorHighlight();
+    } else {
+      if (result.errcode == "LEX_BADTOK") {
+        self.highlightCodeError(result.row, result.col);
+        return;
+      }
     }
 
     if (!tokens)
@@ -468,6 +535,14 @@ class ViewTokens {
   setCSTViewHighlightRange(f) {
     this.CSTViewHighlightRange = f;
   }
+
+  setEditorHighlightCodeError(f) {
+    this.highlightCodeError = f;
+  }
+
+  setClearErrorHighlightCallback(f) {
+    this.clearCodeErrorHighlight = f;
+  }
 }
 
 let viewCST = new ViewCST($("#cst-container"));
@@ -485,6 +560,8 @@ document.body.onload = () => {
   viewTokens.setEditorHighlightLinesCallback(codeEditor.highlightLineRange.bind(codeEditor));
   viewTokens.setEditorHighlightTextCallback(codeEditor.highlightRange.bind(codeEditor));
   viewTokens.setCSTViewHighlightRange(viewCST.highlightRange.bind(viewCST));
+  viewTokens.setEditorHighlightCodeError(codeEditor.highlightError.bind(codeEditor));
+  viewTokens.setClearErrorHighlightCallback(codeEditor.clearErrorHighlight.bind(codeEditor));
 
   compiler.parse(codeEditor.getValue())
     .then(_ => viewCST.render());

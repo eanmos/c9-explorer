@@ -108,13 +108,27 @@ body {
   display: none;
 }
 .editor-highlight {
+  background: rgba(200, 200, 70, 0.5);
+}
+
+.editor-highlight-first {
   border-top: 1px solid rgba(200, 200, 70, 0.8);
+  background: rgba(200, 200, 70, 0.5);
+}
+
+.editor-highlight-last {
   border-bottom: 1px solid rgba(200, 200, 70, 0.8);
   background: rgba(200, 200, 70, 0.5);
 }
 
 .editor-highlight-range {
   background: rgba(200, 200, 70, 0.5);
+}
+
+.editor-highlight-error {
+  border-top: 1px solid rgba(255, 70, 70, 0.8);
+  border-bottom: 1px solid rgba(255, 70, 70, 0.8);
+  background: rgba(255, 70, 70, 0.5);
 }
 
 .lex_high_first {
