@@ -115,12 +115,22 @@ class ViewCST {
     var self = createElem("div", "self");
     var label = createElem("div", "label");
 
+    node.dataset.name = cst.name;
+    node.dataset.type = cst.type;
+    if (cst.lexem)
+      node.dataset.lexem = cst.lexem;
     node.dataset.startRow = cst.start.row;
     node.dataset.startCol = cst.start.col;
     node.dataset.endRow = cst.end.row;
     node.dataset.endCol = cst.end.col;
+    node.dataset.nchildren = cst.nchildren;
+
+    label.classList.add(cst.name);
 
     label.innerHTML = cst.name;
+
+    if (cst.type == "terminal")
+      label.innerHTML += `<span class="lexem">${cst.lexem}</span>`;
 
     if (cst.nchildren > 0)
       self.appendChild(createElem("div", "arrow"));

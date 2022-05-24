@@ -196,3 +196,74 @@ body {
 .identifier .label {
 	color: #05a;
 }
+
+/* #cst-container .tree-node[data-type="nonterminal"] > .self > .label  {
+  color: lightcyan;
+}
+
+#cst-container .tree-node[data-type="terminal"] > .self > .label  {
+	color: yellow;
+} */
+
+/* #cst-container .tree-node > .self > .label  {
+  font-weight: bold;
+}
+#cst-container .tree-node[data-nchildren="0"] > .self > .label  {
+  font-weight: normal;
+} */
+
+#cst-container .TOKEN_IDENTIFIER {
+	color: #05a !important;
+}
+
+span.lexem {
+  margin-left: 4px;
+}
+
+span.lexem::before,
+span.lexem::after {
+  content: "'";
+}
+
+#cst-container .TOKEN_INT,
+#cst-container .TOKEN_RETURN,
+#cst-container .TOKEN_AUTO,
+#cst-container .TOKEN_BREAK,
+#cst-container .TOKEN_CASE,
+#cst-container .TOKEN_CHAR,
+#cst-container .TOKEN_CONST,
+#cst-container .TOKEN_CONTINUE,
+#cst-container .TOKEN_DEFAULT,
+#cst-container .TOKEN_DO,
+#cst-container .TOKEN_DOUBLE,
+#cst-container .TOKEN_ELSE,
+#cst-container .TOKEN_ENUM,
+#cst-container .TOKEN_EXTERN,
+#cst-container .TOKEN_FLOAT,
+#cst-container .TOKEN_FOR,
+#cst-container .TOKEN_GOTO,
+#cst-container .TOKEN_IF,
+#cst-container .TOKEN_INLINE,
+#cst-container .TOKEN_INT,
+#cst-container .TOKEN_LONG,
+#cst-container .TOKEN_REGISTER,
+#cst-container .TOKEN_RESTRICT,
+#cst-container .TOKEN_RETURN,
+#cst-container .TOKEN_SHORT,
+#cst-container .TOKEN_SIGNED,
+#cst-container .TOKEN_SIZEOF,
+#cst-container .TOKEN_STATIC,
+#cst-container .TOKEN_STRUCT,
+#cst-container .TOKEN_SWITCH,
+#cst-container .TOKEN_TYPEDEF,
+#cst-container .TOKEN_UNION,
+#cst-container .TOKEN_UNSIGNED,
+#cst-container .TOKEN_VOID,
+#cst-container .TOKEN_VOLATILE,
+#cst-container .TOKEN_WHILE,
+#cst-container .TOKEN_BOOL,
+#cst-container .TOKEN_COMPLEX,
+#cst-container .TOKEN_IMAGINARY
+ {
+	color: #708;
+}
