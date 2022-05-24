@@ -3,6 +3,19 @@
   width: 100%;
 }
 
+/*
+с этой поправкой все выглядит менее динамично
+
+.tree-node {
+  border-top: 1px solid rgba(0, 0, 0, 0);
+  border-bottom: 1px solid rgba(0, 0, 0, 0);
+}
+.cst_high > .tree-node {
+  border-top: none;
+  border-bottom: none;
+}
+*/
+
 .self {
   width: 100%;
   display: flex;
@@ -95,7 +108,26 @@ body {
   display: none;
 }
 .editor-highlight {
+  border-top: 1px solid rgba(200, 200, 70, 0.8);
+  border-bottom: 1px solid rgba(200, 200, 70, 0.8);
   background: rgba(200, 200, 70, 0.5);
+}
+
+.editor-highlight-range {
+  background: rgba(200, 200, 70, 0.5);
+}
+
+.lex_high_first {
+  border-top: 1px solid rgba(200, 200, 70, 0.8);
+}
+
+.lex_high_last {
+  border-bottom: 1px solid rgba(200, 200, 70, 0.8);
+}
+
+.cst_high {
+  border-top: 1px solid rgba(200, 200, 70, 0.8);
+  border-bottom: 1px solid rgba(200, 200, 70, 0.8);
 }
 
 .cst_high,

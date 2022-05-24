@@ -32,8 +32,8 @@ class Compiler {
   constructor() {
     this.lexerOutput = null;
     this.parserOutput = null;
-    this.parserURL = "http://localhost:9000/parse";
-    this.lexerURL = "http://localhost:9000/tokenize";
+    this.parserURL = "/parse";
+    this.lexerURL = "/tokenize";
   }
 
   tokenize(sourceCode) {
@@ -309,7 +309,7 @@ foo(int a, int b)
     this.currentHighlight = this.editorDoc.markText(
       { line: startRow, ch: startCol },
       { line: endRow, ch: endCol },
-      { className: "editor-highlight" }
+      { className: "editor-highlight-range" }
     );
   }
 
@@ -377,7 +377,7 @@ class ViewTokens {
         const lexem = elem.dataset.lexem;
 
         self.clearHighlight();
-        self.highlightNode(elem);
+        self.highlightRange(row, col, row, col + lexem.length);
 
         self.editorHighlightLines(row, row);
         self.editorHighlightText(row, col, row, col + lexem.length);
@@ -416,13 +416,21 @@ class ViewTokens {
         insideElements.push(elem);
     });
 
-    insideElements.forEach(function (elem) {
-      self.highlightNode(elem);
+    insideElements.forEach(function (elem, i) {
+      const first = i == 0;
+      const last = insideElements.length - 1 == i;
+      self.highlightNode(elem, {first: first, last: last});
     });
   }
 
-  highlightNode(node) {
+  highlightNode(node, pos) {
     let highlight = createElem("div", "lex_high");
+
+    if (pos.first)
+      highlight.classList.add("lex_high_first");
+
+    if (pos.last)
+      highlight.classList.add("lex_high_last");
 
     const container_x = this.container.getBoundingClientRect().x;
     const node_x = node.getBoundingClientRect().x;
