@@ -20,6 +20,13 @@ function clearElem(n) {
   n.innerHTML = "";
 }
 
+function stringifyTokenType(t) {
+  switch (t) {
+    case "TOKEN_EOI": return "end of input";
+    default: return t;
+  }
+}
+
 /*
 ===========================================================
 
@@ -37,6 +44,7 @@ class Compiler {
   }
 
   tokenize(sourceCode) {
+    console.assert(sourceCode !== undefined && sourceCode !== null);
     return fetch(this.lexerURL, {
       method: "POST",
       headers: {
@@ -50,6 +58,7 @@ class Compiler {
   }
 
   parse(sourceCode) {
+    console.assert(sourceCode !== undefined && sourceCode !== null);
     return fetch(this.parserURL, {
       method: "POST",
       headers: {
@@ -80,16 +89,47 @@ class ViewCST {
   }
 
   render() {
+    let self = this;
     let cst = null;
 
     try {
       cst = JSON.parse(compiler.parserOutput);
     } catch (e) {
-      /* ignore errors for now */
+      console.error(e);
     }
 
     if (!cst)
       return;
+
+    if (cst.err == "UNEXPECTED_TOKEN") {
+      self.clearCodeErrorHighlight();
+    
+      let pad = "";
+      for (let i = 0; i <= cst.col; i++) pad += "&nbsp;";
+
+      let msg = '';
+
+      if (cst.got.type === "TOKEN_EOI") {
+        msg = pad + `⌃ <span class=\"error-message-title\">Syntax Error</span>: expected <span class="${cst.expected}">${stringifyTokenType(cst.expected)}</span> here.`;
+      } else {
+        msg = pad + `⌃ <span class=\"error-message-title\">Syntax Error</span>: expected <span class="${cst.expected}">${stringifyTokenType(cst.expected)}</span> but got <span class="${cst.got.type}">${cst.got.type}</span> <span class="lexem">${cst.got.lexem}</span>.`;
+      }
+
+      self.highlightCodeError(cst.row, cst.col, msg);
+      return;
+    } else if (cst.err == "UNEXPECTED_EOI") {
+      self.clearCodeErrorHighlight();
+    
+      let msg = '';
+      let pad = "";
+      for (let i = 0; i <= cst.col; i++) pad += "&nbsp;";
+      msg = pad + "⌃ <span class=\"error-message-title\">Syntax Error</span>: unxpected end of input.";
+      self.highlightCodeError(cst.row, cst.col, msg);
+      return;
+    } else {
+      console.assert(cst.errcode === undefined);
+      console.assert(cst.err === undefined);
+    }
 
     clearElem(this.container);
     this.container.appendChild(this.build(cst));
@@ -110,10 +150,20 @@ class ViewCST {
     this.viewTokensHighlightRange = f;
   }
 
+  setEditorHighlightCodeError(f) {
+    this.highlightCodeError = f;
+  }
+
+  setClearErrorHighlightCallback(f) {
+    this.clearCodeErrorHighlight = f;
+  }
+
   build(cst, parentContainer) {
     let node = createElem("div", "tree-node");
     var self = createElem("div", "self");
     var label = createElem("div", "label");
+
+    console.assert(cst.start !== undefined);
 
     node.dataset.name = cst.name;
     node.dataset.type = cst.type;
@@ -293,9 +343,8 @@ foo(int a, int b)
     this.errorWidget = null;
   }
 
-  highlightError(row, col) {
-    if (this.currentErrorHighlight)
-      this.currentErrorHighlight.clear();
+  highlightError(row, col, msg) {
+    this.clearErrorHighlight();
 
     this.currentErrorHighlight = this.editorDoc.markText(
       { line: row, ch: col },
@@ -303,13 +352,10 @@ foo(int a, int b)
       { className: "editor-highlight-error" }
     );
 
-    this.clearErrorHighlight();
     this.highlightErrorLineRange(row, row);
 
     let errmsg = createElem("div", "error-message");
-    let pad = "";
-    for (let i = 0; i <= col; i++) pad += "&nbsp;";
-    errmsg.innerHTML = pad + "⌃ <span class=\"error-message-title\">Lexical Error</span>: unrecognized token."
+    errmsg.innerHTML = msg;
     this.errorWidget = this.editorDoc.addLineWidget(row, errmsg, {className: "error-message"});
   }
 
@@ -329,17 +375,16 @@ foo(int a, int b)
   lineIsHighlighted(n) {
     const info = this.editorDoc.lineInfo(n);
     if (!info || !info.wrapClass) return false;
-    console.log(info.wrapClass)
     return info.wrapClass.includes("editor-highlight");
   }
 
   initOnChange(compiler, viewCST) {
     this.codemirror.on("change", () => {
-      compiler.parse(this.editorDoc.getValue())
-        .then(_ => viewCST.render());
-
-      compiler.tokenize(this.editorDoc.getValue())
-        .then(_ => viewTokens.render());
+      compiler.tokenize(codeEditor.getValue())
+        .then(_ => viewTokens.render())
+        .then(success => success
+          ? compiler.parse(codeEditor.getValue()).then(_ => viewCST.render())
+          : false);
     });
   }
 
@@ -348,7 +393,7 @@ foo(int a, int b)
   }
 
   highlightErrorLineRange(start, end) {
-    this.clearErrorHighlight();
+    // this.clearErrorHighlight();
 
     for (let i = start; i <= end; i++)
       this.editorDoc.addLineClass(i, "wrap", "editor-highlight-error");
@@ -383,6 +428,9 @@ foo(int a, int b)
 
     if (this.errorWidget)
       this.errorWidget.clear();
+
+    if (this.currentErrorHighlight)
+      this.currentErrorHighlight.clear();
   }
 
   clearHighlight() {
@@ -409,15 +457,23 @@ class ViewTokens {
     try {
       result = JSON.parse(compiler.lexerOutput);
     } catch (e) {
-      /* ignore errors for now */
+      console.error(e);
+      return;
     }
+
+    console.assert(compiler.lexerOutput);
+    console.assert(result);
 
     if (result.tokens) {
       tokens = result.tokens;
       self.clearCodeErrorHighlight();
     } else {
       if (result.errcode == "LEX_BADTOK") {
-        self.highlightCodeError(result.row, result.col);
+        let msg = '';
+        let pad = "";
+        for (let i = 0; i <= result.col; i++) pad += "&nbsp;";
+        msg = pad + "⌃ <span class=\"error-message-title\">Lexical Error</span>: unrecognized token."
+        self.highlightCodeError(result.row, result.col, msg);
         return;
       }
     }
@@ -448,6 +504,7 @@ class ViewTokens {
     });
 
     this.initHighlighting()
+    return true;
   }
 
   initHighlighting() {
@@ -566,6 +623,8 @@ document.body.onload = () => {
   viewCST.setViewTokensHighlightRange(viewTokens.highlightRange.bind(viewTokens));
   viewCST.setEditorHighlightLinesCallback(codeEditor.highlightLineRange.bind(codeEditor));
   viewCST.setEditorHighlightTextCallback(codeEditor.highlightRange.bind(codeEditor));
+  viewCST.setEditorHighlightCodeError(codeEditor.highlightError.bind(codeEditor));
+  viewCST.setClearErrorHighlightCallback(codeEditor.clearErrorHighlight.bind(codeEditor));
 
   viewTokens.setEditorHighlightLinesCallback(codeEditor.highlightLineRange.bind(codeEditor));
   viewTokens.setEditorHighlightTextCallback(codeEditor.highlightRange.bind(codeEditor));
@@ -573,9 +632,9 @@ document.body.onload = () => {
   viewTokens.setEditorHighlightCodeError(codeEditor.highlightError.bind(codeEditor));
   viewTokens.setClearErrorHighlightCallback(codeEditor.clearErrorHighlight.bind(codeEditor));
 
-  compiler.parse(codeEditor.getValue())
-    .then(_ => viewCST.render());
-
   compiler.tokenize(codeEditor.getValue())
-    .then(_ => viewTokens.render());
+    .then(_ => viewTokens.render())
+    .then(success => success
+      ? compiler.parse(codeEditor.getValue()).then(_ => viewCST.render())
+      : false);
 }
