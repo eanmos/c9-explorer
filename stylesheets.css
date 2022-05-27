@@ -7,6 +7,7 @@
   margin-left: 4px;
 	font-style: italic;
 	color: green;
+  white-space: nowrap;
 }
 
 #ast-container span.ctype::after,
@@ -36,6 +37,7 @@
 .self {
   width: 100%;
   display: flex;
+  align-items: center;
 }
 
 .label {
@@ -49,7 +51,7 @@
 }
 
 .arrow {
-  margin-right: 5px;
+  margin-right: 3px;
   font-size: 75%;
 }
 
@@ -57,13 +59,23 @@
   cursor: pointer;
 }
 
+.arrow::after,
+.arrow.visible::after {
+  display: block;
+  content: ' ';
+  background-size: 10px 10px;
+  height: 10px;
+  width: 10px;
+  line-height: 10px;
+}
+
 .arrow::after {
-  content: "\25be";
-  color: #666;
+  background-image: url('/img/chevron-right.svg');
+  padding-bottom: 1px;
 }
 
 .arrow.visible::after {
-  content: "\25b8";
+  background-image: url('/img/chevron-down.svg');
 }
 
 .arrow,
@@ -188,6 +200,13 @@ body {
 
 .token {
   font: 12px "monospace";
+  display: flex;
+  align-items: center;
+  width: min-content;
+}
+
+.token img {
+  padding-bottom: 1px;
 }
 
 #lex-container {

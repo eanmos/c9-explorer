@@ -105,6 +105,19 @@ class ViewCST {
     if (cst.nchildren > 0)
       self.appendChild(createElem("div", "arrow"));
 
+    let icon = createElem("img");
+    icon.width = '12';
+    icon.height = '12';
+    icon.style.marginRight = '4px';
+
+    if (cst.nchildren > 0)
+        icon.src = "/img/more.svg";
+    else
+        icon.src = "/img/symbol-field.svg";
+
+    if (cst.type === "terminal")
+    self.appendChild(icon);
+
     self.appendChild(label);
     node.appendChild(self);
 
@@ -114,6 +127,7 @@ class ViewCST {
       node.appendChild(children);
     }
 
+    if (cst.type === "terminal" || cst.nchildren > 0)
     if (parentContainer)
       parentContainer.appendChild(node);
 

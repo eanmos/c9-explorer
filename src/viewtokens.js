@@ -51,6 +51,14 @@ class ViewTokens {
       container.dataset.row = e.row;
       container.dataset.lexem = e.lexem;
 
+      let icon = createElem("img");
+      icon.width = '12';
+      icon.height = '12';
+      icon.style.marginRight = '4px';
+      icon.src = "/img/symbol-field.svg";
+
+      container.appendChild(icon);
+
       container.appendChild(label);
       container.appendChild(lexem);
 

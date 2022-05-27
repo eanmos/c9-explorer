@@ -95,6 +95,18 @@ class ViewAST {
         if (n.children && n.children.length > 0)
             self.appendChild(createElem("div", "arrow"));
 
+        let icon = createElem("img");
+        icon.width = '12';
+        icon.height = '12';
+        icon.style.marginRight = '4px';
+
+        if (n.children && n.children.length > 0)
+            icon.src = "/img/symbol-class.svg";
+        else
+            icon.src = "/img/symbol-method.svg";
+
+        self.appendChild(icon);
+
         self.appendChild(label);
         node.appendChild(self);
 
