@@ -55,13 +55,16 @@ foo(int a, int b)
     return info.wrapClass.includes("editor-highlight");
   }
 
-  initOnChange(compiler, viewCST) {
+  initOnChange(compiler, viewCST, viewTokens, viewAST) {
     this.codemirror.on("change", () => {
-      compiler.tokenize(codeEditor.getValue())
-        .then(_ => viewTokens.render())
-        .then(success => success
-          ? compiler.parse(codeEditor.getValue()).then(_ => viewCST.render())
-          : false);
+        compiler.tokenize(codeEditor.getValue())
+            .then(_ => viewTokens.render())
+            .then(success =>
+                success && compiler.parse(codeEditor.getValue())
+                    .then(_ => viewCST.render())
+                    .then(success => 
+                        success && compiler.genast(codeEditor.getValue())
+                            .then(_ => viewAST.render())));
     });
   }
 

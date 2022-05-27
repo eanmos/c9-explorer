@@ -31,9 +31,11 @@ let viewCST = new ViewCST($("#cst-container"));
 let compiler = new Compiler();
 let codeEditor = new CodeEditor($("#code-editor"));
 let viewTokens = new ViewTokens($("#lex-container"));
+let viewAST = new ViewAST();
 
 document.body.onload = () => {
-  codeEditor.initOnChange(compiler, viewCST, viewTokens);
+  codeEditor.initOnChange(compiler, viewCST, viewTokens, viewAST);
+  console.log(viewAST);
 
   viewCST.setViewTokensHighlightRange(viewTokens.highlightRange.bind(viewTokens));
   viewCST.setEditorHighlightLinesCallback(codeEditor.highlightLineRange.bind(codeEditor));
@@ -49,7 +51,10 @@ document.body.onload = () => {
 
   compiler.tokenize(codeEditor.getValue())
     .then(_ => viewTokens.render())
-    .then(success => success
-      ? compiler.parse(codeEditor.getValue()).then(_ => viewCST.render())
-      : false);
+    .then(success =>
+        success && compiler.parse(codeEditor.getValue())
+            .then(_ => viewCST.render())
+            .then(success => 
+                success && compiler.genast(codeEditor.getValue())
+                    .then(_ => viewAST.render())));
 }

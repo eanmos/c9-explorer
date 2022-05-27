@@ -54,6 +54,8 @@ class ViewCST {
 
     this.initFolding();
     this.initHighlighting();
+  
+    return true;
   }
 
   setEditorHighlightLinesCallback(f) {
