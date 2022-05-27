@@ -121,6 +121,8 @@ class ViewCST {
   }
 
   highlightNode(node) {
+    console.assert(node);
+
     let highlight = document.createElement("div");
     highlight.classList.toggle("cst_high");
 

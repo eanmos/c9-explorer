@@ -1,4 +1,21 @@
-.tree-node {
+#ast-container span.name {
+  color: #05a;
+  margin-left: 4px;
+}
+
+#ast-container span.ctype {
+  margin-left: 4px;
+	font-style: italic;
+	color: green;
+}
+
+#ast-container span.ctype::after,
+#ast-container span.ctype::before {
+	content: "'";
+}
+
+.tree-node,
+.ast-node {
   padding-left: 10px;
   width: 100%;
 }
@@ -54,6 +71,10 @@
   display: inline;
 }
 
+#ast-container .label {
+  display: inherit; /* don't know why it works */
+}
+
 #code-editor {
   width: 200px;
   height: 100%;
@@ -89,7 +110,8 @@ body {
   overflow: hidden;
 }
 
-#cst-container {
+#cst-container,
+#ast-container {
   width: 400px;
   overflow-y: scroll !important;
   overflow-x: hidden;
@@ -139,13 +161,16 @@ body {
   border-bottom: 1px solid rgba(200, 200, 70, 0.8);
 }
 
-.cst_high {
+.cst_high,
+.highlighter
+{
   border-top: 1px solid rgba(200, 200, 70, 0.8);
   border-bottom: 1px solid rgba(200, 200, 70, 0.8);
 }
 
 .cst_high,
-.lex_high {
+.lex_high,
+.highlighter {
   background: rgba(200, 200, 70, 0.4);
   width: 100%;
   overflow-x: hidden;
@@ -172,12 +197,12 @@ body {
 	height: 100%;
 }
 
-#lex-container .label,
-#lex-container .lexem {
+.label,
+.lexem {
 	display: inline;
 }
 
-#lex-container .label {
+.label {
 	margin-right: 8px;
 }
 

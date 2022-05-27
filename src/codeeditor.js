@@ -1,10 +1,10 @@
 class CodeEditor {
   constructor(container) {
-    const DEFAULT_CODE = `int
-foo(int a, int b)
+    const DEFAULT_CODE = `int foo;
+
+int
+sum(int a, int b)
 {
-	int a = 5;
-	return a + 5;
 }`;
 
     this.codemirror = CodeMirror(container, {
@@ -91,6 +91,19 @@ foo(int a, int b)
   highlightRange(startRow, startCol, endRow, endCol) {
     if (this.currentHighlight)
       this.currentHighlight.clear();
+
+    this.currentHighlight = this.editorDoc.markText(
+      { line: startRow, ch: startCol },
+      { line: endRow, ch: endCol },
+      { className: "editor-highlight-range" }
+    );
+  }
+
+  highlightRange2(startRow, startCol, endRow, endCol) {
+    if (this.currentHighlight)
+      this.currentHighlight.clear();
+
+    this.highlightLineRange(startRow, endRow);
 
     this.currentHighlight = this.editorDoc.markText(
       { line: startRow, ch: startCol },

@@ -46,7 +46,7 @@ class Compiler {
       body: sourceCode,
     })
       .then(response => response.text())
-      .then(text => {(this.genastOutput = text); console.log(text)})
+      .then(text => (this.genastOutput = text))
       .catch(e => console.error(e));
   }
 }

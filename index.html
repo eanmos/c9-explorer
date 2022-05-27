@@ -28,8 +28,11 @@
 		<div id="code-editor" class="resizable-left"></div>
 		<div id="code-editor-right-split" class="resizable-right">
 			<div id="lex-container" class="resizable-left"></div>
-			<div id="cst-container" class="resizable-right"></div>
-		</div>
+      <div id="lex-container-right-split" class="resizable-right">
+        <div id="cst-container" class="resizable-left"></div>
+        <div id="ast-container" class="resizable-right"></div>
+      </div>
+    </div>
 	</div>
   </body>
 
@@ -38,9 +41,10 @@
       document.getElementById("main").style.width = window.innerWidth + "px";
       document.getElementById("main").style.height = window.innerHeight + "px";
       var sizes = {
-        "code-editor": 0.5,
-        "lex-container": 0.5,
+        "code-editor": 0.2,
+        "lex-container": 0.2,
         "cst-container": 0.5,
+        "ast-container": 0.5
       };
 
       let resizerThickness = 5;
