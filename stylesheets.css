@@ -1,9 +1,11 @@
-#ast-container span.name {
+#ast-container span.name,
+#ast-container span.identifier {
   color: #05a;
   margin-left: 4px;
 }
 
-#ast-container span.ctype {
+#ast-container span.ctype
+{
   margin-left: 4px;
 	font-style: italic;
 	color: green;
@@ -38,6 +40,7 @@
   width: 100%;
   display: flex;
   align-items: center;
+  /* max-width: max-content; */
 }
 
 .label {
@@ -337,4 +340,76 @@ span.lexem::after {
 }
 .CodeMirror-linenumber {
   min-width: 0;
+}
+
+.info-icon {
+  display: none;
+  width: 12px;
+  height: 12px;
+  padding-top: 1px;
+}
+
+.highlighter:hover .self:hover .info-icon:hover {
+  cursor: pointer;
+}
+
+#ast-container .self .label {
+  max-width: max-content;
+}
+
+.info-icon.hovered {
+  cursor: pointer;
+}
+
+/*       TOOOOOOOOLTIP   */
+
+.ast-node-tooltip {
+  font: 12px/1.4 'Arial';
+}
+
+.ast-node-tooltip .head {
+  border-bottom: 1px solid #ccc;
+  padding: 5px 10px;
+}
+
+.ast-node-tooltip .body {
+  padding: 5px 10px;
+  max-height: 180px;
+  overflow-y: scroll;
+}
+
+.ast-node-tooltip .kind {
+  display: flex;
+  justify-items: center;
+}
+
+.ast-node-tooltip .kind img {
+  margin-right: 4px;
+}
+
+.tippy-box[data-theme~='custom'] {
+  background-color: #eee;
+  border-radius: 0;
+  border: 1px solid #aaa;
+  padding: 0;
+  box-shadow: 0px 0px 16px 4px rgba(0, 0, 0, 0.2);
+}
+
+.tippy-content {
+  padding: 0;
+}
+
+.ast-node-tooltip span.ctype2 {
+	font-family: monospace;
+	color: green;
+  white-space: nowrap;
+}
+
+.ast-node-tooltip span.identifier {
+	font-family: monospace;
+}
+
+.ast-node-tooltip span.keyword {
+	font-family: monospace;
+	color: #708;
 }
