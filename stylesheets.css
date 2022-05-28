@@ -131,8 +131,10 @@ body {
   overflow-y: scroll !important;
   overflow-x: hidden;
   padding-top: 4px;
-  padding-bottom: 4px;
-  box-sizing: content-box;
+  padding-bottom: 8px;
+  box-sizing: border-box;
+  scrollbar-width: none !important;
+  background-color: white;
 }
 
 #cst-container:hover {
