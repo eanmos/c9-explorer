@@ -17,6 +17,9 @@
     <script defer src="lib/codemirror/keymap/vim.js"></script>
     <script defer src="lib/codemirror/mode/clike/clike.js"></script>
     <link rel="stylesheet" href="lib/codemirror/codemirror.css" />
+    
+    <!-- DarkReader -->
+    <script defer src="https://unpkg.com/darkreader@4.9.46"></script>
 
     <script defer src="src/codeeditor.js"></script>
     <script defer src="src/compiler.js"></script>
@@ -53,6 +56,12 @@
 
       let resizerThickness = 5;
       Resizable.initialise("main", sizes, resizerThickness);
+
+      DarkReader.enable({
+        brightness: 100,
+        contrast: 100,
+        sepia: 10
+      });
     });
 
     window.addEventListener("resize", () => {
