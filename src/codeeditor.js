@@ -55,16 +55,19 @@ sum(int a, int b)
     return info.wrapClass.includes("editor-highlight");
   }
 
-  initOnChange(compiler, viewCST, viewTokens, viewAST) {
+  initOnChange(compiler, viewCST, viewTokens, viewAST, viewASM) {
     this.codemirror.on("change", () => {
-        compiler.tokenize(codeEditor.getValue())
-            .then(_ => viewTokens.render())
-            .then(success =>
-                success && compiler.parse(codeEditor.getValue())
-                    .then(_ => viewCST.render())
-                    .then(success => 
-                        success && compiler.genast(codeEditor.getValue())
-                            .then(_ => viewAST.render())));
+      compiler.tokenize(codeEditor.getValue())
+        .then(_ => viewTokens.render())
+        .then(success =>
+            success && compiler.parse(codeEditor.getValue())
+                .then(_ => viewCST.render())
+                .then(success => 
+                    success && compiler.genast(codeEditor.getValue())
+                        .then(_ => viewAST.render())
+                        .then(success =>
+                          success && compiler.codegen(codeEditor.getValue())
+                            .then(_ => viewASM.render()))));
     });
   }
 

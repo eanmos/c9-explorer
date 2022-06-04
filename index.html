@@ -21,11 +21,16 @@
     <!-- DarkReader -->
     <script defer src="https://unpkg.com/darkreader@4.9.46"></script>
 
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="lib/highlightjs/styles/base16/3024.min.css">
+    <script src="lib/highlightjs/highlight.min.js"></script>
+
     <script defer src="src/codeeditor.js"></script>
     <script defer src="src/compiler.js"></script>
     <script defer src="src/viewast.js"></script>
     <script defer src="src/viewcst.js"></script>
     <script defer src="src/viewtokens.js"></script>
+    <script defer src="src/viewasm.js"></script>
     <script defer src="src/main.js"></script>
 
     <link rel="stylesheet" type="text/css" href="stylesheets.css" />
@@ -37,7 +42,10 @@
 			<div id="lex-container" class="resizable-left"></div>
       <div id="lex-container-right-split" class="resizable-right">
         <div id="cst-container" class="resizable-left"></div>
-        <div id="ast-container" class="resizable-right"></div>
+        <div id="cst-container-right-split" class="resizable-right">
+          <div id="ast-container" class="resizable-left"></div>
+          <div id="asm-container" class="resizable-right"></div>
+        </div>
       </div>
     </div>
 	</div>

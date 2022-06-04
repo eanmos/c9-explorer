@@ -3,9 +3,11 @@ class Compiler {
     this.lexerOutput = null;
     this.parserOutput = null;
     this.genastOutput = null;
+    this.codegenOutput = null;
     this.parserURL = "/parse";
     this.lexerURL = "/tokenize";
     this.genastURL = "/genast";
+    this.codegenURL = "/codegen";
   }
 
   tokenize(sourceCode) {
@@ -47,6 +49,20 @@ class Compiler {
     })
       .then(response => response.text())
       .then(text => (this.genastOutput = text))
+      .catch(e => console.error(e));
+  }
+
+  codegen(sourceCode) {
+    console.assert(sourceCode !== undefined && sourceCode !== null);
+    return fetch(this.codegenURL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "plain/text;charset=utf-8",
+      },
+      body: sourceCode,
+    })
+      .then(response => response.text())
+      .then(text => (this.codegenOutput = text))
       .catch(e => console.error(e));
   }
 }

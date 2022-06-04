@@ -48,6 +48,8 @@ class ViewAST {
         console.assert(result);
 
         this.display(this.build(result));
+
+        return true;
     }
 
     build(n) {

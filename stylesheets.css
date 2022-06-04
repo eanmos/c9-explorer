@@ -415,3 +415,57 @@ span.lexem::after {
 	font-family: monospace;
 	color: #708;
 }
+
+#asm-container .highlighted {
+  background: rgba(200, 200, 70, 0.4);
+  width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  border-top: 1px solid rgba(200, 200, 70, 0.8);
+  border-bottom: 1px solid rgba(200, 200, 70, 0.8);
+}
+
+#asm-container {
+  padding-top: 4px;
+}
+
+#asm-container pre {
+  padding-left: 8px;
+}
+
+#asm-container pre:hover {
+  cursor: pointer;
+}
+
+/* START BLUR */
+
+/* #asm-container pre,
+#lex-container > div {
+  filter:brightness(0.5);
+}
+
+#asm-container pre.highlighted,
+#lex-container .lex_high {
+  filter: brightness(1) drop-shadow(0 0 2px yellow);
+}
+
+#ast-container .self,
+#cst-container .self {
+  filter: brightness(0.5);
+}
+
+#ast-container .highlighter,
+#cst-container .cst_high {
+  filter: drop-shadow(0 0 2px yellow);
+}
+
+#ast-container .highlighter .self,
+#cst-container .cst_high .self {
+  filter: brightness(1);
+}
+
+#code-editor .editor-highlight {
+  filter: drop-shadow(0 0 2px yellow);
+} */
+
+/* END BLUR */
