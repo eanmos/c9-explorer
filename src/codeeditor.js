@@ -103,16 +103,17 @@ sum(int a, int b)
   }
 
   highlightRange2(startRow, startCol, endRow, endCol) {
+    this.clearHighlight();
     if (this.currentHighlight)
       this.currentHighlight.clear();
 
-    this.highlightLineRange(startRow, endRow);
-
-    this.currentHighlight = this.editorDoc.markText(
-      { line: startRow, ch: startCol },
-      { line: endRow, ch: endCol },
-      { className: "editor-highlight-range" }
-    );
+    if (startRow == endRow) {
+      this.currentHighlight = this.editorDoc.markText(
+        { line: startRow, ch: startCol },
+        { line: endRow, ch: endCol },
+        { className: "editor-highlight-range" }
+      );
+    }
   }
 
   clearErrorHighlight() {

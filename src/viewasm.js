@@ -22,7 +22,7 @@ class ViewASM {
     }
 
     build(n) {
-        let div = createElem("div");
+        let div = createElem("div", "asm-root");
 
         for (const snippet of n) {
             let escaped = snippet.asm.replaceAll("\\n", "\n");
@@ -53,6 +53,10 @@ class ViewASM {
     display(root) {
         this.container.innerHTML = "";
         this.container.appendChild(root);
+
+        let banner = createElem("div", "banner");
+        banner.innerHTML = "ASM";
+        this.container.appendChild(banner);
     }
 
     addHighlightCallback(f) {

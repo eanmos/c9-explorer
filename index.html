@@ -37,7 +37,10 @@
   </head>
   <body>
 	<div id="main">
-		<div id="code-editor" class="resizable-left"></div>
+    <div id="code-editor-container" class="resizable-left">
+      <div id="code-editor"></div>
+      <div id="code-editor-banner" class="banner">SRC</div>
+    </div>
 		<div id="code-editor-right-split" class="resizable-right">
 			<div id="lex-container" class="resizable-left"></div>
       <div id="lex-container-right-split" class="resizable-right">
@@ -56,10 +59,11 @@
       document.getElementById("main").style.width = window.innerWidth + "px";
       document.getElementById("main").style.height = window.innerHeight + "px";
       var sizes = {
-        "code-editor": 0.2,
+        "code-editor-container": 0.2,
         "lex-container": 0.2,
-        "cst-container": 0.5,
-        "ast-container": 0.5
+        "cst-container": 0.3,
+        "ast-container": 0.5,
+        "asm-container": 0.2
       };
 
       let resizerThickness = 5;

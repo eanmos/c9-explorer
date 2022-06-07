@@ -39,6 +39,8 @@ class ViewTokens {
 
     clearElem(this.container);
 
+    let top = createElem("div", "lex-root");
+
     tokens.forEach((e) => {
       let container = createElem("div", "token");
       let label = createElem("div", "label");
@@ -64,8 +66,14 @@ class ViewTokens {
 
       container.classList.add(e.metatype);
 
-      this.container.appendChild(container);
+      top.appendChild(container);
     });
+
+    this.container.appendChild(top);
+
+    let banner = createElem("div", "banner");
+    banner.innerHTML = "LEX";
+    this.container.appendChild(banner);
 
     this.initHighlighting()
     return true;

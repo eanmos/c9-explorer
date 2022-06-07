@@ -61,6 +61,7 @@ class ViewAST {
         console.assert(n.end_col !== undefined);
 
         let node = createElem("div", "ast-node");
+        node.classList.add('ast-root');
 
         node.dataset.kind = n.kind;
         node.dataset.startRow = n.start_row;
@@ -182,6 +183,10 @@ class ViewAST {
     display(root) {
         this.container.innerHTML = "";
         this.container.appendChild(root);
+
+        let banner = createElem("div", "banner");
+        banner.innerHTML = "AST";
+        this.container.appendChild(banner);
     }
 
     addHighlightCallback(f) {

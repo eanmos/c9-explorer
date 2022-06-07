@@ -50,7 +50,13 @@ class ViewCST {
     }
 
     clearElem(this.container);
-    this.container.appendChild(this.build(cst));
+    let root = this.build(cst);
+    root.classList.add("cst-root");
+    this.container.appendChild(root);
+
+    let banner = createElem("div", "banner");
+    banner.innerHTML = "CST";
+    this.container.appendChild(banner);
 
     this.initFolding();
     this.initHighlighting();
